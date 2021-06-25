@@ -11,10 +11,11 @@ const path = require("path");
 const app = express();
 
 //Middleware
-//app.use(morgan("dev"));
+app.use(morgan("dev"));
 //app.use(helmet());
 app.use(cors({
     origin: 'http://localhost:3000',
+    allowedHeaders: 'Authorization'
 }));
 
 app.set("view engine", "ejs");
@@ -22,8 +23,9 @@ app.set("views", path.join(__dirname, "/views"));
 require('./auth/passportConfig')(app);
 
 //Open Dota routes
-// app.use('/api/v1', api);
+app.use('/api/v1', require("./routes/dotaRoutes"));
 
-app.use("/auth", require("./auth/index.js"));
+//Auth Routes
+app.use("/auth", require("./routes/steamRoutes"));
 
 module.exports = app;

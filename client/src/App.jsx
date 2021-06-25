@@ -1,60 +1,52 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import jwt from "jwt-decode";
+import httpClient from "./httpClient";
+import Dashboard from "./components/Dashboard/Dashboard.jsx";
 
 export default function App() {
     const [currentUser, setCurrentUser] = useState(null);
 
     const handleLogin = () => {
         const popupWindow = window.open(
-            "http://localhost:5460/auth/steam",
+            import.meta.env.VITE_LOGIN_URL,
             "_blank",
-            "width=800, height=600"
+            "width=600, height=630"
         );
         if (window.focus) popupWindow.focus();
     };
 
     const handleLogout = () => {
-        console.log("Logging Out");
-        localStorage.clear();
-        setCurrentUser(null);
+        setCurrentUser(() => null);
+        httpClient.logOut();
     };
 
-    const checkExpiredToken = () => {
-        let token = localStorage.getItem("jwtToken");
-        if (token) {
-            let decoded = jwt(token);
-            if (decoded.exp * 1000 < Date.now()) {
-                console.log("Token Expired");
-                localStorage.clear();
-                setCurrentUser(null);
-            } else {
-                if (!currentUser) {
-                    setCurrentUser(decoded.user);
-                }
-            }
+    const checkLoginStatus = () => {
+        const user = httpClient.getUser();
+        if (!user) {
+            console.log("No user Found");
+            return handleLogout;
         }
+        setCurrentUser(user.user);
     };
 
     useEffect(() => {
-        checkExpiredToken();
-
+        checkLoginStatus();
         window.addEventListener("message", (event) => {
-            if (event.origin !== "http://localhost:5460") return;
+            if (event.origin !== import.meta.env.VITE_API_URL) return;
             const { token, ok } = event.data;
             const user = event.data.user;
             if (ok) {
-                localStorage.setItem("jwtToken", token);
+                httpClient.setToken(token);
                 setCurrentUser(JSON.parse(user));
             }
         });
-    }, [currentUser]);
+    }, []);
 
     return !currentUser ? (
         <button onClick={handleLogin}>Login</button>
     ) : (
         <>
-            <div>{currentUser.id}</div>
+            <Dashboard logOut={handleLogout} steamId={currentUser.id} />
             <button onClick={handleLogout}>Log Out</button>
         </>
     );
