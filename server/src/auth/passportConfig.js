@@ -5,8 +5,8 @@ module.exports = (app) => {
     passport.use(
         new SteamStrategy(
             {
-                returnURL: `${process.env.ORIGIN_URL}/auth/steam/return`,
-                realm: `${process.env.ORIGIN_URL}/auth/steam`,
+                returnURL: `${process.env.ORIGIN_URL}auth/steam/return`,
+                realm: `${process.env.ORIGIN_URL}auth/steam`,
                 apiKey: process.env.STEAM_KEY,
             },
             async (identifier, profile, done) => {
