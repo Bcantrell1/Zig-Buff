@@ -1,1 +1,2 @@
 web:node src/server.js
+ps:scale web=1
