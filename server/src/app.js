@@ -7,6 +7,7 @@ const morgan = require("morgan");
 const helmet = require("helmet");
 const cors = require("cors");
 const path = require("path");
+const { url } = require("inspector");
 
 const app = express();
 
@@ -15,7 +16,7 @@ app.use(morgan("dev"));
 //app.use(helmet());
 app.use(
     cors({
-        origin: "http://localhost:3000",
+        origin: process.env.FRONT_END_URL,
         allowedHeaders: "Authorization",
     })
 );

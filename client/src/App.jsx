@@ -33,15 +33,6 @@ export default function App() {
 
     useEffect(() => {
         checkLoginStatus();
-        window.addEventListener("message", (event) => {
-            if (event.origin !== import.meta.env.VITE_API_URL) return;
-            const { token, ok } = event.data;
-            const user = event.data.user;
-            if (ok) {
-                httpClient.setToken(token);
-                setCurrentUser(JSON.parse(user));
-            }
-        });
     }, []);
 
     return !currentUser ? (
