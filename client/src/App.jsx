@@ -7,12 +7,7 @@ export default function App() {
     const [currentUser, setCurrentUser] = useState(null);
 
     const handleLogin = () => {
-        const popupWindow = window.open(
-            import.meta.env.VITE_LOGIN_URL,
-            "_blank",
-            "width=600, height=630"
-        );
-        if (window.focus) popupWindow.focus();
+        window.location.href = import.meta.env.VITE_LOGIN_URL;
     };
 
     const handleLogout = () => {
@@ -21,6 +16,13 @@ export default function App() {
     };
 
     const checkLoginStatus = () => {
+        const windowUrl = window.location.search;
+        const params = new URLSearchParams(windowUrl);
+        const token = params.get("token");
+        if (token) {
+            httpClient.setToken(token);
+            history.pushState(null, "", location.href.split("?")[0]);
+        }
         const user = httpClient.getUser();
         if (!user) {
             console.log("No user Found");
